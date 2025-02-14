@@ -76,10 +76,10 @@ func main() {
 	log.Info.Println("Authorized on account " + bot.Self.UserName)
 
 	// Send startup msg.
-	_, errmsg := bot.Send(tgbotapi.NewMessage(conf.TelegramChatID, startupMsg))
-	if errmsg != nil {
-		log.Error.Println(errmsg.Error())
-	}
+	//_, errmsg := bot.Send(tgbotapi.NewMessage(conf.TelegramChatID, startupMsg))
+	//if errmsg != nil {
+	//	log.Error.Println(errmsg.Error())
+	//}
 
 	// Starting ping command handler(healthcheck)
 	go PongBot(bot)
