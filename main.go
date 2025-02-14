@@ -5,9 +5,9 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/oldtyt/frigate-telegram/internal/config"
-	"github.com/oldtyt/frigate-telegram/internal/frigate"
-	"github.com/oldtyt/frigate-telegram/internal/log"
+	"github.com/mikevlz/frigate-telegram/internal/config"
+	"github.com/mikevlz/frigate-telegram/internal/frigate"
+	"github.com/mikevlz/frigate-telegram/internal/log"
 )
 
 // FrigateEvents is frigate events struct

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/oldtyt/frigate-telegram/internal/config"
-	"github.com/oldtyt/frigate-telegram/internal/log"
+	"github.com/mikevlz/frigate-telegram/internal/config"
+	"github.com/mikevlz/frigate-telegram/internal/log"
 	redis "github.com/redis/go-redis/v9"
 )
 

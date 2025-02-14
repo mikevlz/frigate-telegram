@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/oldtyt/frigate-telegram/internal/config"
+	"github.com/mikevlz/frigate-telegram/internal/config"
 )
 
 var (

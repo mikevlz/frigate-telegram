@@ -1,4 +1,4 @@
-module github.com/oldtyt/frigate-telegram
+module github.com/mikevlz/frigate-telegram
 
 go 1.21.3
 

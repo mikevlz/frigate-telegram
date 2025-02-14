@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/oldtyt/frigate-telegram/internal/config"
-	"github.com/oldtyt/frigate-telegram/internal/log"
-	"github.com/oldtyt/frigate-telegram/internal/redis"
+	"github.com/mikevlz/frigate-telegram/internal/config"
+	"github.com/mikevlz/frigate-telegram/internal/log"
+	"github.com/mikevlz/frigate-telegram/internal/redis"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -267,7 +267,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		}
 
 		if videoInfo.Size() < 52428800 {
-			// Telegram don't send large file see for more: https://github.com/OldTyT/frigate-telegram/issues/5
+			// Telegram don't send large file see for more: https://github.com/mikevlz/frigate-telegram/issues/5
 			// Add clip to media group
 			MediaClip := tgbotapi.NewInputMediaVideo(tgbotapi.FilePath(FilePathClip))
 			medias = append(medias, MediaClip)
