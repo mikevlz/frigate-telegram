@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REPOSITORY_URL: ghcr.io
-      IMAGE_NAME: oldtyt/frigate-telegram
+      IMAGE_NAME: mikevlz/frigate-telegram
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REPOSITORY_URL: ghcr.io
-      IMAGE_NAME: oldtyt/frigate-telegram
+      IMAGE_NAME: mikevlz/frigate-telegram
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REPOSITORY_URL: ghcr.io
-      IMAGE_NAME: oldtyt/frigate-telegram
+      IMAGE_NAME: mikevlz/frigate-telegram
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       REPOSITORY_URL: ghcr.io
-      IMAGE_NAME: oldtyt/frigate-telegram
+      IMAGE_NAME: mikevlz/frigate-telegram
     steps:
       - name: Checkout
         uses: actions/checkout@v4
