@@ -101,7 +101,7 @@ func GetTagList(Tags []any) []string {
 }
 
 func ErrorSend(TextError string, bot *tgbotapi.BotAPI, EventID string) {
-	conf := config.New()
+	//conf := config.New()
 	TextError += "\nEventID: " + EventID
 	///_, err := bot.Send(tgbotapi.NewMessage(conf.TelegramChatID, TextError))
 	//if err != nil {
