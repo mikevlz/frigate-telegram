@@ -103,10 +103,10 @@ func GetTagList(Tags []any) []string {
 func ErrorSend(TextError string, bot *tgbotapi.BotAPI, EventID string) {
 	conf := config.New()
 	TextError += "\nEventID: " + EventID
-	_, err := bot.Send(tgbotapi.NewMessage(conf.TelegramChatID, TextError))
-	if err != nil {
-		log.Error.Println(err.Error())
-	}
+	///_, err := bot.Send(tgbotapi.NewMessage(conf.TelegramChatID, TextError))
+	//if err != nil {
+	//	log.Error.Println(err.Error())
+	//}
 	log.Error.Fatalln(TextError)
 }
 
@@ -222,27 +222,29 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 	redis.AddNewEvent(FrigateEvent.ID, "InWork", time.Duration(60)*time.Second)
 
 	// Prepare text message
-	text := "*Event*\n"
-	text += "┣*Camera*\n┗ #" + NormalizeTagText(FrigateEvent.Camera) + "\n"
-	text += "┣*Label*\n┗ #" + NormalizeTagText(FrigateEvent.Label) + "\n"
+	text := "*Камера*\n"
+	text += "┗ #" + NormalizeTagText(FrigateEvent.Camera) + "\n"
+	//text += "┣*Label*\n┗ #" + NormalizeTagText(FrigateEvent.Label) + "\n"
 	// if FrigateEvent.SubLabel != nil {
 	// 	text += "┣*SubLabel*\n┗ #" + strings.Join(GetTagList(FrigateEvent.SubLabel), ", #") + "\n"
 	// }
 	t_start := time.Unix(int64(FrigateEvent.StartTime), 0)
-	text += fmt.Sprintf("┣*Start time*\n┗ `%s", t_start) + "`\n"
+	text += fmt.Sprintf("┣*Начало события*\n┗ `%s", t_start) + "`\n"
 	if FrigateEvent.EndTime == 0 {
-		text += "┣*End time*\n┗ `In progess`" + "\n"
+		text += "┣*конец события*\n┗ `Еще не закончилось`" + "\n"
 	} else {
 		t_end := time.Unix(int64(FrigateEvent.EndTime), 0)
-		text += fmt.Sprintf("┣*End time*\n┗ `%s", t_end) + "`\n"
+		text += fmt.Sprintf("┣*конец события*\n┗ `%s", t_end) + "`\n"
 	}
-	text += fmt.Sprintf("┣*Top score*\n┗ `%f", (FrigateEvent.Data.TopScore*100)) + "%`\n"
-	text += "┣*Event id*\n┗ `" + FrigateEvent.ID + "`\n"
-	text += "┣*Zones*\n┗ #" + strings.Join(GetTagList(FrigateEvent.Zones), ", #") + "\n"
-	text += "*URLs*\n"
-	text += "┣[Events](" + conf.FrigateExternalURL + "/events?cameras=" + FrigateEvent.Camera + "&labels=" + FrigateEvent.Label + "&zones=" + strings.Join(GetTagList(FrigateEvent.Zones), ",") + ")\n"
-	text += "┣[General](" + conf.FrigateExternalURL + ")\n"
-	text += "┗[Source clip](" + conf.FrigateExternalURL + "/api/events/" + FrigateEvent.ID + "/clip.mp4)\n"
+	//text += fmt.Sprintf("┣*Top score*\n┗ `%f", (FrigateEvent.Data.TopScore*100)) + "%`\n"
+	//text += "┣*Event id*\n┗ `" + FrigateEvent.ID + "`\n"
+	
+	text += "\n"
+	text += "*Область события*\n┗ #" + strings.Join(GetTagList(FrigateEvent.Zones), ", #") + "\n"
+	text += "\n"
+	//text += "┣[Events](" + conf.FrigateExternalURL + "/events?cameras=" + FrigateEvent.Camera + "&labels=" + FrigateEvent.Label + "&zones=" + strings.Join(GetTagList(FrigateEvent.Zones), ",") + ")\n"
+	//text += "┣[General](" + conf.FrigateExternalURL + ")\n"
+	text += "[Оригинал записи](" + conf.FrigateExternalURL + "/api/events/" + FrigateEvent.ID + "/clip.mp4)\n"
 
 	// Save thumbnail
 	FilePathThumbnail := SaveThumbnail(FrigateEvent.ID, FrigateEvent.Thumbnail, bot)
