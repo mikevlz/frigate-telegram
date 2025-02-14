@@ -4,9 +4,6 @@ WORKDIR $GOPATH/frigate-telegram
 COPY . $GOPATH/frigate-telegram
 
 RUN apk --no-cache add binutils
-RUN go mod init github.com/mikevlz/frigate-telegram/internal/frigate
-RUN go mod init github.com/mikevlz/frigate-telegram/internal/config
-RUN go mod init github.com/mikevlz/frigate-telegram/internal/log
 RUN go build . 
 RUN strip frigate-telegram
 
