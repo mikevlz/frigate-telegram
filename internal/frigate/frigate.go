@@ -264,8 +264,25 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		videoInfo, err := os.Stat(FilePathClip)
 		if err != nil {
 			ErrorSend("Error receiving information about the clip file: "+err.Error(), bot, FrigateEvent.ID)
+			}
+		httpReq := http.Request{}
+		httpReq.Method = "POST"
+		httpReq.URL, _ = url.Parse("http://10.200.214.251:9090/api/v2/alias/upload")
+		httpReq.Header.Set("Sharry-Alias", "6c6NFPiWbGB-RSWgRWWL9z2-uSrbFi7F6AW-SZxMKNUDLKy")
+		httpReq.Header.Set("accept", "application/json")
+		httpReq.Header.Set("Content-Type", "multipart/form-data")
+		fileBytes, err := ioutil.ReadFile(FilePathClip)
+		if err != nil {
+			ErrorSend("Error when reading clip file: "+err.Error(), bot, FrigateEvent.ID)
 		}
-
+		formFile := new(http.Request).FormFile("file", filepath.Base(FilePathClip))
+		formFile.File = bytes.NewReader(fileBytes)
+		httpReq.Body = &bytes.Buffer{}
+		io.Copy(httpReq.Body, bytes.NewReader(formFile))
+		resp, err := http.PostForm("http://10.200.214.251:9090/api/v2/alias/upload", nil)
+		if err != nil {
+			ErrorSend("Error sending clip file to server: "+err.Error(), bot, FrigateEvent.ID)
+		}
 		if videoInfo.Size() < 52428800 {
 			// Telegram don't send large file see for more: https://github.com/mikevlz/frigate-telegram/issues/5
 			// Add clip to media group
