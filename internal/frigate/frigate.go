@@ -272,22 +272,22 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		writer := multipart.NewWriter(form)
 		formField, err := writer.CreateFormField("meta")
 		if err != nil {
-			log.Debug(err)
+			log.Debug.Println(err)
 		}
 		_, err = formField.Write([]byte(`{"name":"string","validity":0,"description":"string","maxViews":0,"password":""}`))
 	
 		fw, err := writer.CreateFormFile("file", filepath.Base(FilePathClip))
 		if err != nil {
-			log.Debug(err)
+			log.Debug.Println(err)
 		}
 		fd, err := os.Open(FilePathClip)
 		if err != nil {
-			log.Debug(err)
+			log.Debug.Println(err)
 		}
 		defer fd.Close()
 		_, err = io.Copy(fw, fd)
 		if err != nil {
-			log.Debug(err)
+			log.Debug.Println(err)
 		}
 	
 		writer.Close()
@@ -295,14 +295,14 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		client := &http.Client{}
 		req, err := http.NewRequest("POST", "http://10.200.214.251:9090/api/v2/alias/upload", form)
 		if err != nil {
-			log.Debug(err)
+			log.Debug.Println(err)
 		}
 		req.Header.Set("Sharry-Alias", "6c6NFPiWbGB-RSWgRWWL9z2-uSrbFi7F6AW-SZxMKNUDLKy")
 		req.Header.Set("accept", "application/json")
 		req.Header.Set("Content-Type", writer.FormDataContentType())
 		resp, err := client.Do(req)
 		if err != nil {
-			log.Debug(err)
+			log.Debug.Println(err)
 		}
 		defer resp.Body.Close()
 		bodyText, err := io.ReadAll(resp.Body)
