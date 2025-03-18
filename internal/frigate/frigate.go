@@ -2,7 +2,6 @@ package frigate
 
 import (
 	"bytes"
-	"log"
 	"mime/multipart"
 	"path/filepath"
 	"encoding/base64"
