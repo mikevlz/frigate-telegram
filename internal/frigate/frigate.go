@@ -264,22 +264,45 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		videoInfo, err := os.Stat(FilePathClip)
 		if err != nil {
 			ErrorSend("Error receiving information about the clip file: "+err.Error(), bot, FrigateEvent.ID)
-			}
-		httpReq := http.Request{}
-		httpReq.Method = "POST"
-		httpReq.URL, _ = url.Parse("http://10.200.214.251:9090/api/v2/alias/upload")
-		httpReq.Header.Set("Sharry-Alias", "6c6NFPiWbGB-RSWgRWWL9z2-uSrbFi7F6AW-SZxMKNUDLKy")
-		httpReq.Header.Set("accept", "application/json")
-		httpReq.Header.Set("Content-Type", "multipart/form-data")
-		fileBytes, err := ioutil.ReadFile(FilePathClip)
-		if err != nil {
-			ErrorSend("Error when reading clip file: "+err.Error(), bot, FrigateEvent.ID)
 		}
-		formFile := new(http.Request).FormFile("file", filepath.Base(FilePathClip))
-		formFile.File = bytes.NewReader(fileBytes)
-		httpReq.Body = &bytes.Buffer{}
-		io.Copy(httpReq.Body, bytes.NewReader(formFile))
-		resp, err := http.PostForm("http://10.200.214.251:9090/api/v2/alias/upload", nil)
+		form := new(bytes.Buffer)
+		writer := multipart.NewWriter(form)
+		formField, err := writer.CreateFormField("meta")
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = formField.Write([]byte(`{"name":"string","validity":0,"description":"string","maxViews":0,"password":""}`))
+	
+		fw, err := writer.CreateFormFile("file", filepath.Base(FilePathClip))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fd, err := os.Open(FilePathClip)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer fd.Close()
+		_, err = io.Copy(fw, fd)
+		if err != nil {
+			log.Fatal(err)
+		}
+	
+		writer.Close()
+	
+		client := &http.Client{}
+		req, err := http.NewRequest("POST", "http://10.200.214.251:9090/api/v2/alias/upload", form)
+		if err != nil {
+			log.Fatal(err)
+		}
+		req.Header.Set("Sharry-Alias", "6c6NFPiWbGB-RSWgRWWL9z2-uSrbFi7F6AW-SZxMKNUDLKy")
+		req.Header.Set("accept", "application/json")
+		req.Header.Set("Content-Type", writer.FormDataContentType())
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+		bodyText, err := io.ReadAll(resp.Body)
 		if err != nil {
 			ErrorSend("Error sending clip file to server: "+err.Error(), bot, FrigateEvent.ID)
 		}
