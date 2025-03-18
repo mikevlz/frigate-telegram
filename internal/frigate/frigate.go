@@ -275,7 +275,9 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 			log.Debug.Println(err)
 		}
 		_, err = formField.Write([]byte(`{"name":"string","validity":0,"description":"string","maxViews":0,"password":""}`))
-	
+		if err != nil {
+			log.Debug.Println(err)
+		}	
 		fw, err := writer.CreateFormFile("file", filepath.Base(FilePathClip))
 		if err != nil {
 			log.Debug.Println(err)
