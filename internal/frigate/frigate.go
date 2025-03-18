@@ -309,6 +309,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		if err != nil {
 			ErrorSend("Error sending clip file to server: "+err.Error(), bot, FrigateEvent.ID)
 		}
+		log.Debug.Println(bodyText)
 		if videoInfo.Size() < 52428800 {
 			// Telegram don't send large file see for more: https://github.com/mikevlz/frigate-telegram/issues/5
 			// Add clip to media group
