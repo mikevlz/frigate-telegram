@@ -319,7 +319,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		}
 		// Unmarshal the JSON into the struct
 		var response SharryCreateApiResponse
-		err := json.Unmarshal(bodyText, &response)
+		err = json.Unmarshal(bodyText, &response)
 		if err != nil {
 			fmt.Println("Error parsing JSON:", err)
 			//return
