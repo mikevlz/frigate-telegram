@@ -48,6 +48,12 @@ type EventsStruct []struct {
 	Zones              []any       `json:"zones"`
 }
 
+type SharryCreateApiResponse struct {
+    Success bool   `json:"success"`
+    Message string `json:"message"`
+    ID      string `json:"id"` // Maps to the "$ident" string in the schema
+}
+
 type EventStruct struct {
 	Box    interface{} `json:"box"`
 	Camera string      `json:"camera"`
@@ -270,14 +276,14 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		}
 		form := new(bytes.Buffer)
 		writer := multipart.NewWriter(form)
-		formField, err := writer.CreateFormField("meta")
-		if err != nil {
-			log.Debug.Println(err)
-		}
-		_, err = formField.Write([]byte(`{"name":"string","validity":0,"description":"string","maxViews":0,"password":""}`))
-		if err != nil {
-			log.Debug.Println(err)
-		}	
+		//formField, err := writer.CreateFormField("meta")
+		//if err != nil {
+		//	log.Debug.Println(err)
+		//}
+		//_, err = formField.Write([]byte(`{"name":"string","validity":0,"description":"string","maxViews":0,"password":""}`))
+		//if err != nil {
+		//	log.Debug.Println(err)
+		//}	
 		fw, err := writer.CreateFormFile("file", filepath.Base(FilePathClip))
 		if err != nil {
 			log.Debug.Println(err)
@@ -311,6 +317,16 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		if err != nil {
 			ErrorSend("Error sending clip file to server: "+err.Error(), bot, FrigateEvent.ID)
 		}
+		// Unmarshal the JSON into the struct
+		var response SharryCreateApiResponse
+		err := json.Unmarshal(jsonData, &response)
+		if err != nil {
+			fmt.Println("Error parsing JSON:", err)
+			//return
+		}
+		
+			// Access the "id" field
+		fmt.Println("ID:", response.ID)
 		log.Debug.Println(bodyText)
 		if videoInfo.Size() < 52428800 {
 			// Telegram don't send large file see for more: https://github.com/mikevlz/frigate-telegram/issues/5
