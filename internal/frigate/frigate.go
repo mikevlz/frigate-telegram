@@ -24,8 +24,8 @@ import (
 
 const (
 	baseURL    = "http://10.200.214.251:9090/api/v2" // Update with your Sharry URL
-	username   = config.getEnv("SHARRY-USER","")
-	password   = config.getEnv("SHARRY-PASS","")
+	username   = os.LookupEnv("SHARRY_USER","")
+	password   = os.LookupEnv("SHARRY_PASS","")
 	//shareID    = "your_share_id" // The private share ID you want to publish
 )
 
@@ -466,7 +466,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		}
 
 		// 3. Get share details to find public ID
-		publicID, err := getPublicID(token, shareID)
+		publicID, err := getPublicID(token, response.ID)
 		if err != nil {
 			panic(err)
 		}
