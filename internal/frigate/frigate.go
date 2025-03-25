@@ -266,7 +266,8 @@ func login() (string, error) {
 		Account:  username,
 		Password: password,
 	}
-
+	log.Debug.Println("Sharry user: " + username)
+	log.Debug.Println("Sharry pass: " + password)
 	body, _ := json.Marshal(loginData)
 	resp, err := http.Post(baseURL+"/open/auth/login", "application/json", bytes.NewBuffer(body))
 	if err != nil {
@@ -379,7 +380,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 	text += "\n"
 	//text += "┣[Events](" + conf.FrigateExternalURL + "/events?cameras=" + FrigateEvent.Camera + "&labels=" + FrigateEvent.Label + "&zones=" + strings.Join(GetTagList(FrigateEvent.Zones), ",") + ")\n"
 	//text += "┣[General](" + conf.FrigateExternalURL + ")\n"
-	text += "[Оригинал записи](" + conf.FrigateExternalURL + "/api/events/" + FrigateEvent.ID + "/clip.mp4)\n"
+	//text += "[Оригинал записи](" + conf.FrigateExternalURL + "/api/events/" + FrigateEvent.ID + "/clip.mp4)\n"
 
 	// Save thumbnail
 	FilePathThumbnail := SaveThumbnail(FrigateEvent.ID, FrigateEvent.Thumbnail, bot)
@@ -387,9 +388,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 
 	var medias []interface{}
 	MediaThumbnail := tgbotapi.NewInputMediaPhoto(tgbotapi.FilePath(FilePathThumbnail))
-	MediaThumbnail.Caption = text
-	MediaThumbnail.ParseMode = tgbotapi.ModeMarkdown
-	medias = append(medias, MediaThumbnail)
+
 
 	if FrigateEvent.HasClip && FrigateEvent.EndTime != 0 {
 		// Save clip
@@ -473,8 +472,9 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		}
 
 		// 4. Construct public URL
-		publicURL := fmt.Sprintf("%s/share/%s", baseURL, publicID)
-		fmt.Printf("Public share URL: %s\n", publicURL)
+		publicURL := fmt.Sprintf("http://10.200.214.251:9090/app/open/%s?view=1", publicID)
+		text += "[Оригинал записи](" + publicURL +")\n"
+		
 		if videoInfo.Size() < 52428800 {
 			// Telegram don't send large file see for more: https://github.com/mikevlz/frigate-telegram/issues/5
 			// Add clip to media group
@@ -482,7 +482,9 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 			medias = append(medias, MediaClip)
 		}
 	}
-
+	MediaThumbnail.Caption = text
+	MediaThumbnail.ParseMode = tgbotapi.ModeMarkdown
+	medias = append(medias, MediaThumbnail)
 	// Create message
 	msg := tgbotapi.MediaGroupConfig{
 		ChatID: conf.TelegramChatID,
