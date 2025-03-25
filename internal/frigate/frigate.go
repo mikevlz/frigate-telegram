@@ -28,8 +28,8 @@ const (
 	//password   = os.Getenv("SHARRY_PASS")
 	//shareID    = "your_share_id" // The private share ID you want to publish
 )
-username   = os.Getenv("SHARRY_USER")
-password   = os.Getenv("SHARRY_PASS")
+var username   = os.Getenv("SHARRY_USER")
+var password   = os.Getenv("SHARRY_PASS")
 type LoginRequest struct {
 	Account  string `json:"account"`
 	Password string `json:"password"`
