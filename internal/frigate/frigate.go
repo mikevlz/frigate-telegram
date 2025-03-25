@@ -22,6 +22,42 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+const (
+	baseURL    = "http://localhost:9090/api/v2" // Update with your Sharry URL
+	username   = "your_username"
+	password   = "your_password"
+	shareID    = "your_share_id" // The private share ID you want to publish
+)
+
+type LoginRequest struct {
+	Account  string `json:"account"`
+	Password string `json:"password"`
+}
+
+type AuthResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	Token   string `json:"token"`
+	ValidMs int64  `json:"validMs"`
+	User    string `json:"user"`
+	Admin   bool   `json:"admin"`
+	ID      string `json:"id"`
+}
+
+type PublishRequest struct {
+	ReuseID bool `json:"reuseId"`
+}
+
+type ShareDetail struct {
+	ID         string `json:"id"`
+	PublishInfo struct {
+		ID      string `json:"id"`
+		Enabled bool   `json:"enabled"`
+	} `json:"publishInfo"`
+}
+
+
+
 type EventsStruct []struct {
 	Box    interface{} `json:"box"`
 	Camera string      `json:"camera"`
@@ -224,6 +260,95 @@ func SaveClip(EventID string, bot *tgbotapi.BotAPI) string {
 	return filename
 }
 
+func login() (string, error) {
+	loginData := LoginRequest{
+		Account:  username,
+		Password: password,
+	}
+
+	body, _ := json.Marshal(loginData)
+	resp, err := http.Post(baseURL+"/open/auth/login", "application/json", bytes.NewBuffer(body))
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("login failed: %s", resp.Status)
+	}
+
+	var authResp AuthResponse
+	err = json.NewDecoder(resp.Body).Decode(&authResp)
+	if err != nil {
+		return "", err
+	}
+
+	if !authResp.Success {
+		return "", fmt.Errorf("login failed: %s", authResp.Message)
+	}
+
+	return authResp.Token, nil
+}
+
+func publishShare(token, shareID string) error {
+	publishData := PublishRequest{ReuseID: true}
+	body, _ := json.Marshal(publishData)
+
+	req, _ := http.NewRequest(
+		"POST",
+		fmt.Sprintf("%s/sec/share/%s/publish", baseURL, shareID),
+		bytes.NewBuffer(body),
+	)
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Sharry-Auth", token)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("publish failed: %s", resp.Status)
+	}
+
+	return nil
+}
+
+func getPublicID(token, shareID string) (string, error) {
+	req, _ := http.NewRequest(
+		"GET",
+		fmt.Sprintf("%s/sec/share/%s", baseURL, shareID),
+		nil,
+	)
+	req.Header.Set("Sharry-Auth", token)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to get share details: %s", resp.Status)
+	}
+
+	var shareDetail ShareDetail
+	err = json.NewDecoder(resp.Body).Decode(&shareDetail)
+	if err != nil {
+		return "", err
+	}
+
+	if !shareDetail.PublishInfo.Enabled || shareDetail.PublishInfo.ID == "" {
+		return "", fmt.Errorf("share is not properly published")
+	}
+
+	return shareDetail.PublishInfo.ID, nil
+}
+
 func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 	// Get config
 	conf := config.New()
@@ -326,8 +451,29 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		}
 		
 			// Access the "id" field
-		fmt.Println("ID:", response.ID)
+		fmt.Println("sharry file ID:", response.ID)
 		log.Debug.Println(bodyText)
+			// 1. Login and get auth token
+		token, err := login()
+		if err != nil {
+			panic(err)
+		}
+
+		// 2. Publish the share
+		err = publishShare(token, shareID)
+		if err != nil {
+			panic(err)
+		}
+
+		// 3. Get share details to find public ID
+		publicID, err := getPublicID(token, shareID)
+		if err != nil {
+			panic(err)
+		}
+
+		// 4. Construct public URL
+		publicURL := fmt.Sprintf("%s/share/%s", baseURL, publicID)
+		fmt.Printf("Public share URL: %s\n", publicURL)
 		if videoInfo.Size() < 52428800 {
 			// Telegram don't send large file see for more: https://github.com/mikevlz/frigate-telegram/issues/5
 			// Add clip to media group
