@@ -23,10 +23,10 @@ import (
 )
 
 const (
-	baseURL    = "http://localhost:9090/api/v2" // Update with your Sharry URL
-	username   = "your_username"
-	password   = "your_password"
-	shareID    = "your_share_id" // The private share ID you want to publish
+	baseURL    = "http://10.200.214.251:9090/api/v2" // Update with your Sharry URL
+	username   = config.getEnv("SHARRY-USER","")
+	password   = config.getEnv("SHARRY-PASS","")
+	//shareID    = "your_share_id" // The private share ID you want to publish
 )
 
 type LoginRequest struct {
@@ -460,7 +460,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		}
 
 		// 2. Publish the share
-		err = publishShare(token, shareID)
+		err = publishShare(token, response.ID)
 		if err != nil {
 			panic(err)
 		}
