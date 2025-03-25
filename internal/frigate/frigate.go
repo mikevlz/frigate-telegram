@@ -24,11 +24,12 @@ import (
 
 const (
 	baseURL    = "http://10.200.214.251:9090/api/v2" // Update with your Sharry URL
-	username   = os.Getenv("SHARRY_USER")
-	password   = os.Getenv("SHARRY_PASS")
+	//username   = os.Getenv("SHARRY_USER")
+	//password   = os.Getenv("SHARRY_PASS")
 	//shareID    = "your_share_id" // The private share ID you want to publish
 )
-
+username   = os.Getenv("SHARRY_USER")
+password   = os.Getenv("SHARRY_PASS")
 type LoginRequest struct {
 	Account  string `json:"account"`
 	Password string `json:"password"`
