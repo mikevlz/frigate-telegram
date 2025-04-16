@@ -427,7 +427,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		writer.Close()
 	
 		client := &http.Client{}
-		req, err := http.NewRequest("POST", "http://10.200.214.251:9090/api/v2/alias/upload", form)
+		req, err := http.NewRequest("POST", fmt.Sprintf("%s/alias/upload", baseURL), form)
 		if err != nil {
 			log.Debug.Println(err)
 		}
@@ -473,7 +473,7 @@ func SendMessageEvent(FrigateEvent EventStruct, bot *tgbotapi.BotAPI) {
 		}
 
 		// 4. Construct public URL
-		publicURL := fmt.Sprintf("http://10.200.214.251:9090/app/open/%s?view=1", publicID)
+		publicURL := fmt.Sprintf("http://10.200.214.249:9090/app/open/%s?view=1", publicID)
 		text += "[Оригинал записи](" + publicURL +")\n"
 		
 		if videoInfo.Size() < 52428800 {
